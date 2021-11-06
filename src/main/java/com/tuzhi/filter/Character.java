@@ -21,7 +21,6 @@ public class Character implements Filter {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html");
-        System.out.println("进入过滤器");
         filterChain.doFilter(req,resp);
     }
 
