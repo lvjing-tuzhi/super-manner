@@ -46,11 +46,23 @@ public class UserServiceImpl implements UserService{
         return user;
     }
 
-@Test
-    public void test(){
-        UserServiceImpl userService = new UserServiceImpl();
-        User admin = userService.login("admin", "123456");
-        System.out.println(admin);
-        System.out.println(admin.getUserPassword());
-}
+    @Override
+    public boolean updatePw(int id, String pwd) {
+        Connection connection = null;
+        boolean flag = false;
+        try {
+            connection = BaseDao.getConnection();
+            int i = userDao.updatePwd(connection, id, pwd);
+            System.out.println(i);
+            if (i > 0) {
+                flag = true;
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
 }

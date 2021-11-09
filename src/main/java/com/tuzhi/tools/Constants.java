@@ -11,4 +11,5 @@ import javax.servlet.http.HttpServletRequest;
 
 public class Constants {
     public final static String USER_SESSION = "userSession";//登录成功的存储session名
+    public final static String SYS_MESSAGE = "message";
 }

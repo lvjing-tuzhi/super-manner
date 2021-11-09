@@ -12,4 +12,6 @@ import com.tuzhi.pojo.User;
 public interface UserService {
 //    用户登录
     public User login(String userCode,String password);
+//    修改密码
+    public boolean updatePw(int id,String pwd);
 }

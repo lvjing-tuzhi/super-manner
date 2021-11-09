@@ -10,7 +10,7 @@ import java.io.IOException;
  * @create: 2021-11-04 22:25
  **/
 
-public class Character implements Filter {
+public class CharacterFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 

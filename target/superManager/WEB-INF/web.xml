@@ -3,7 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    
+    <servlet>
+        <servlet-name>UserServlet</servlet-name>
+        <servlet-class>com.tuzhi.servlet.user.UserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserServlet</servlet-name>
+        <url-pattern>/jsp/user.do</url-pattern>
+    </servlet-mapping>
 
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>com.tuzhi.servlet.user.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/jsp/logout.do</url-pattern>
+    </servlet-mapping>
+    
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>com.tuzhi.servlet.user.LoginServlet</servlet-class>
@@ -15,11 +33,20 @@
 
     <filter>
         <filter-name>character</filter-name>
-        <filter-class>com.tuzhi.filter.Character</filter-class>
+        <filter-class>com.tuzhi.filter.CharacterFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>character</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>sysfilter</filter-name>
+        <filter-class>com.tuzhi.filter.SysFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>sysfilter</filter-name>
+        <url-pattern>/jsp/*</url-pattern>
     </filter-mapping>
 
     <welcome-file-list>

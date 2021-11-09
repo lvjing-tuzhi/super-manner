@@ -63,19 +63,19 @@ $(function(){
 			validateTip(rnewpassword.next(),{"color":"red"},imgNo + " 两次密码输入不一致，请重新输入",false);
 		}
 	});
-	
-	
+
 	saveBtn.on("click",function(){
 		oldpassword.blur();
 		newpassword.blur();
 		rnewpassword.blur();
-		if(oldpassword.attr("validateStatus") == "true" 
-			&& newpassword.attr("validateStatus") == "true"
+		alert("点击了");
+		// oldpassword.attr("validateStatus") == "true"
+		if(newpassword.attr("validateStatus") == "true"
 			&& rnewpassword.attr("validateStatus") == "true"){
 			if(confirm("确定要修改密码？")){
 				$("#userForm").submit();
 			}
 		}
-		
+
 	});
 });

@@ -66,29 +66,15 @@ public class BaseDao {
         return resultSet;
     }
 
-//    获取增删改方法
-    public static int execute(Connection connection,String sql,Object[] parm) {
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+    public static int execute(Connection connection,PreparedStatement pstm,
+                              String sql,Object[] params) throws Exception{
+        int updateRows = 0;
+        pstm = connection.prepareStatement(sql);
+        for(int i = 0; i < params.length; i++){
+            pstm.setObject(i+1, params[i]);
         }
-        for (int i = 0; i < parm.length; i++) {
-            try {
-                preparedStatement.setObject(i+1,parm[i]);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        }
-        int update = 0;
-        try {
-            update = preparedStatement.executeUpdate();
-            return update;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return update;
+        updateRows = pstm.executeUpdate();
+        return updateRows;
     }
 
 //    释放资源

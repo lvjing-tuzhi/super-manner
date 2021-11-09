@@ -182,8 +182,6 @@
         padding-left: 40px;
         width: 90%;
     }
-
-
     /*右边*/
     .right{
         width: 85%;
