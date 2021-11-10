@@ -3,7 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-    
+
+<!--    用户操作-->
     <servlet>
         <servlet-name>UserServlet</servlet-name>
         <servlet-class>com.tuzhi.servlet.user.UserServlet</servlet-class>
@@ -13,6 +14,7 @@
         <url-pattern>/jsp/user.do</url-pattern>
     </servlet-mapping>
 
+<!--    登出-->
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>com.tuzhi.servlet.user.LogoutServlet</servlet-class>
@@ -21,7 +23,8 @@
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/jsp/logout.do</url-pattern>
     </servlet-mapping>
-    
+
+<!--    登入-->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>com.tuzhi.servlet.user.LoginServlet</servlet-class>
@@ -31,6 +34,7 @@
         <url-pattern>/login.do</url-pattern>
     </servlet-mapping>
 
+<!--    解决乱码过滤-->
     <filter>
         <filter-name>character</filter-name>
         <filter-class>com.tuzhi.filter.CharacterFilter</filter-class>
@@ -40,6 +44,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+<!--    用户登录过滤-->
     <filter>
         <filter-name>sysfilter</filter-name>
         <filter-class>com.tuzhi.filter.SysFilter</filter-class>
@@ -49,6 +54,13 @@
         <url-pattern>/jsp/*</url-pattern>
     </filter-mapping>
 
+
+
+<!--    设置session单位分钟-->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+<!--    欢迎页面-->
     <welcome-file-list>
         <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
