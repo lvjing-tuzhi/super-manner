@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @program: superManager
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService{
         return user;
     }
 
+//    修改密码
     @Override
     public boolean updatePw(int id, String pwd) {
         Connection connection = null;
@@ -65,4 +67,46 @@ public class UserServiceImpl implements UserService{
         return flag;
     }
 
+//    获取用户总数
+
+    @Override
+    public int getUserCount(String userName, int userRole) {
+        Connection connection = null;
+        int count = 0;
+        try {
+            connection = BaseDao.getConnection();
+            count = userDao.getUserCount(connection, userName, userRole);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return count;
+    }
+
+//    获取用户列表
+    @Override
+    public List<User> getUserList(String userName, int userRole, int currentPageNo, int pageSize) {
+        Connection connection = null;
+        List<User> userList = null;
+        try {
+            connection = BaseDao.getConnection();
+            userList = userDao.getUserList(connection, userName, userRole, currentPageNo, pageSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return userList;
+    }
+    @Test
+    public void test() {
+        UserServiceImpl userService = new UserServiceImpl();
+        List<User> userList = userService.getUserList(null, 2, 1, 5);
+        for (User user : userList) {
+            System.out.println(user.getUserName());
+        }
+    }
 }
