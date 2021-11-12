@@ -4,9 +4,12 @@ package com.tuzhi.servlet.user;
 import com.alibaba.fastjson.JSONArray;
 import com.mysql.cj.util.StringUtils;
 import com.mysql.cj.xdevapi.JsonArray;
+import com.tuzhi.pojo.Role;
 import com.tuzhi.pojo.User;
+import com.tuzhi.service.role.RoleServiceImpl;
 import com.tuzhi.service.user.UserServiceImpl;
 import com.tuzhi.tools.Constants;
+import com.tuzhi.tools.PageSupport;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -16,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,13 +37,70 @@ public class UserServlet extends HttpServlet {
             updatePwd(req,resp);
         }else if (method.equals("pwdmodify")) {
             pwdModify(req,resp);
+        }else if (method.equals("query")) {
+            query(req,resp);
         }
+    }
+
+    private void query(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+//        获取前端参数
+        String queryname = req.getParameter("queryname");
+        String queryUserRoleTemp = req.getParameter("queryUserRole");
+        String pageIndex = req.getParameter("pageIndex");
+
+//        初始页数
+        int queryUserRole = 0;
+        int pageSize = Constants.PAGESIZE;
+        int currentPageNo = 1;
+
+        if (queryname == null) {
+            queryname = "";
+        }
+        if (queryUserRoleTemp != null) {
+            queryUserRole = Integer.parseInt(queryUserRoleTemp);
+        }
+        if (pageIndex != null) {
+            currentPageNo = Integer.parseInt(pageIndex);
+        }
+
+        UserServiceImpl userService = new UserServiceImpl();
+//        总数量
+        int totalCount = userService.getUserCount(queryname, queryUserRole);
+//        总页数
+//        PageSupport pageSupport = new PageSupport();
+//        pageSupport.setTotalCount(pageSize);
+//        pageSupport.setCurrentPageNo(currentPageNo);
+//        pageSupport.setPageSize(pageSize);
+        int totalPageCount = ((int) totalCount / pageSize ) + 1;
+
+//        获取用户展示列表
+        List<User> userList = userService.getUserList(queryname, queryUserRole, currentPageNo, pageSize);
+
+//        获得角色列表
+        RoleServiceImpl roleService = new RoleServiceImpl();
+        List<Role> roleList = roleService.getRoleList();
+
+//        返回数据给前端
+        req.setAttribute("userList",userList);
+        req.setAttribute("roleList",roleList);
+        req.setAttribute("queryUserName",queryname);
+        req.setAttribute("totalPageCount",totalPageCount);
+        req.setAttribute("totalCount",totalCount);
+        req.setAttribute("currentPageNo",currentPageNo);
+
+        req.getRequestDispatcher("userlist.jsp").forward(req,resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
+
     }
+
+    //查询用户管理
+
+
     //修改密码
     public void updatePwd(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Object attribute = req.getSession().getAttribute(Constants.USER_SESSION);
@@ -62,7 +123,8 @@ public class UserServlet extends HttpServlet {
         }
         req.getRequestDispatcher("pwdmodify.jsp").forward(req,resp);
     }
-//    验证旧密码,与session进行对比
+
+    //    验证旧密码,与session进行对比
     public void pwdModify(HttpServletRequest req, HttpServletResponse resp) {
         System.out.println("进入验证旧密码");
         String oldpassword = req.getParameter("oldpassword");
