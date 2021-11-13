@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService{
         try {
             connection = BaseDao.getConnection();
             int i = userDao.updatePwd(connection, id, pwd);
-            System.out.println(i);
             if (i > 0) {
                 flag = true;
             }
@@ -101,12 +100,99 @@ public class UserServiceImpl implements UserService{
         }
         return userList;
     }
-    @Test
-    public void test() {
-        UserServiceImpl userService = new UserServiceImpl();
-        List<User> userList = userService.getUserList(null, 2, 1, 5);
-        for (User user : userList) {
-            System.out.println(user.getUserName());
+
+    //根据用户id获取用户信息
+    @Override
+    public User getUserById(int id) {
+        Connection connection = null;
+        User user = null;
+        try {
+            connection  = BaseDao.getConnection();
+            user = userDao.getUserById(connection, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
         }
+        return user;
+    }
+
+//    添加用户
+    @Override
+    public boolean addUser(User user) {
+        Connection connection = null;
+        boolean flag = false;
+        try {
+            connection = BaseDao.getConnection();
+            connection.setAutoCommit(false);//开启JDBC事务管理
+            int updateRow = userDao.addUser(connection, user);
+            connection.commit();
+            if (updateRow > 0) {
+                flag = true;
+            }
+        } catch (Exception e) {
+//            事务回滚
+            try {
+                connection.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return flag;
+    }
+
+    @Override
+    public User selectUserCodeExist(String userCode) {
+        Connection connection = null;
+        User user = null;
+        try {
+            connection = BaseDao.getConnection();
+            user = userDao.getLoginUser(connection, userCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return user;
+    }
+
+//    修改用户
+    @Override
+    public boolean modifyUser(User user) {
+        boolean flag = false;
+        Connection connection = null;
+        try {
+            connection = BaseDao.getConnection();
+            int i = userDao.modifyUser(connection, user);
+            if (i > 0) {
+                flag = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return flag;
+    }
+
+    @Override
+    public boolean deleteUser(int id) {
+        boolean flag = false;
+        Connection connection = null;
+        try {
+            connection = BaseDao.getConnection();
+            int i = userDao.deleteUser(connection, id);
+            if (i > 0) {
+                flag = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            BaseDao.closeResource(connection,null,null);
+        }
+        return flag;
     }
 }

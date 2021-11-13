@@ -136,4 +136,88 @@ public class UserDaoImpl implements UserDao{
         }
         return userList;
     }
+
+    //根据用户id获取到用户信息
+    @Override
+    public User getUserById(Connection connection, int id) throws Exception {
+        PreparedStatement pstm = null;
+        ResultSet rs = null;
+        User user = null;
+        if (connection != null) {
+            String sql = "select u.*,r.roleName as userRoleName from smbms_user u,smbms_role r where u.id=? and u.userRole = r.id";
+            Object[] parm = {id};
+            rs = BaseDao.execute(connection, pstm, sql, parm, rs);
+//            把数据取出来
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUserName(rs.getString("userName"));
+                user.setUserCode(rs.getString("userCode"));
+                user.setUserPassword(rs.getString("userPassword"));
+                user.setGender(rs.getInt("gender"));
+                user.setBirthday(rs.getDate("birthday"));
+                user.setPhone(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setUserRole(rs.getInt("userRole"));
+                user.setUserRoleName(rs.getString("userRoleName"));
+                user.setCreatedBy(rs.getInt("createdBy"));
+                user.setCreationDate(rs.getDate("creationDate"));
+                user.setModifyBy(rs.getInt("modifyBy"));
+                user.setModifyDate(rs.getDate("modifyDate"));
+            }
+            BaseDao.closeResource(null,pstm,rs);
+        }
+        return user;
+    }
+
+//    添加用户
+    @Override
+    public int addUser(Connection connection, User user) throws Exception {
+        PreparedStatement pstm = null;
+        int execute = 0;
+        if (connection != null) {
+            String sql = "insert into smbms_user (userCode,userName,userPassword," +
+                    "userRole,gender,birthday,phone,address,creationDate,createdBy) " +
+                    "values(?,?,?,?,?,?,?,?,?,?)";
+            Object[] parm = {user.getUserCode(),user.getUserName(),user.getUserPassword(),
+            user.getUserRole(),user.getGender(),user.getBirthday(),user.getPhone(),user.getAddress(),
+            user.getCreationDate(),user.getCreatedBy()};
+
+            execute = BaseDao.execute(connection, pstm, sql, parm);
+            BaseDao.closeResource(null,pstm,null);
+        }
+        return execute;
+    }
+
+//    修改用户
+    @Override
+    public int modifyUser(Connection connection, User user) throws Exception {
+        PreparedStatement pstm = null;
+        int execute = 0;
+        if (connection != null) {
+            String sql = "update smbms_user set userName=?,"+
+                    "gender=?,birthday=?,phone=?,address=?,userRole=?,modifyBy=?,modifyDate=? where id = ? ";
+            Object[] params = {user.getUserName(),user.getGender(),user.getBirthday(),user.getPhone(),
+            user.getAddress(),user.getUserRole(),user.getModifyBy(),user.getModifyDate(),user.getId()};
+            System.out.println("userDao" + user);
+            execute = BaseDao.execute(connection, pstm, sql, params);
+            BaseDao.closeResource(null,pstm,null);
+        }
+        return execute;
+    }
+
+//    删除用户
+    @Override
+    public int deleteUser(Connection connection, int id) throws Exception {
+        PreparedStatement pstm = null;
+        int execute = 0;
+        if (connection != null) {
+            String sql = "delete from smbms_user where id=?";
+            Object[] param = {id};
+            execute = BaseDao.execute(connection, pstm, sql, param);
+
+            BaseDao.closeResource(null,pstm,null);
+        }
+        return execute;
+    }
 }

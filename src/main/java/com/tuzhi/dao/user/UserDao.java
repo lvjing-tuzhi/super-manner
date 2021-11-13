@@ -20,9 +20,16 @@ public interface UserDao {
     public int updatePwd(Connection connection,int id,String pw) throws Exception;
 //    获取用户个数
     public int getUserCount(Connection connection,String userName,int userRole) throws Exception;
-
 //    获得用户列表
     public List<User> getUserList(Connection connection,String userName,int userRole,int currentPageNo,int pageSize) throws Exception;
+    //根据用户id获取用户信息
+    public User getUserById(Connection connection,int id) throws Exception;
+//    添加用户
+    public int addUser(Connection connection,User user) throws Exception;
+//    修改用户
+    public int modifyUser(Connection connection,User user) throws Exception;
+//    删除用户
+    public int deleteUser(Connection connection,int id) throws Exception;
 }
 
 

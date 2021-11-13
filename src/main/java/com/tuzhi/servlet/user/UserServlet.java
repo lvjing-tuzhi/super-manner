@@ -18,9 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @program: superManager
@@ -39,9 +39,187 @@ public class UserServlet extends HttpServlet {
             pwdModify(req,resp);
         }else if (method.equals("query")) {
             query(req,resp);
+        }else if (method.equals("view")) {
+            view(req,resp);
+        }else if (method.equals("add")) {
+            try {
+                addUser(req,resp);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else if (method.equals("getrolelist")) {
+            getrolelist(req,resp);
+        }else if (method.equals("ucexist")) {
+            ucexist(req,resp);
+        }else if (method.equals("modify")) {
+            getUserById(req,resp);
+        }else if (method.equals("modifyexe")) {
+            modifyexe(req,resp);
+        }else if (method.equals("deluser")) {
+            deluser(req,resp);
         }
     }
 
+    private void deluser(HttpServletRequest req, HttpServletResponse resp) {
+        int uid = Integer.parseInt(req.getParameter("uid"));
+        UserServiceImpl userService = new UserServiceImpl();
+        Map<String, String> map = new HashMap<>();
+        if (uid <= 0) {
+            map.put("delResult","notexist");
+            System.out.println("删除不存在");
+        }
+        if (userService.deleteUser(uid)) {
+            map.put("delResult","true");
+            System.out.println("删除成功");
+        }else {
+            map.put("delResult","false");
+            System.out.println("删除失败");
+        }
+        resp.setContentType("application/JSON");
+        PrintWriter writer = null;
+        try {
+            writer = resp.getWriter();
+            writer.write(JSONArray.toJSONString(map));
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void modifyexe(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("开始修改代码");
+        String uid = req.getParameter("uid");
+        String userName = req.getParameter("userName");
+        String gender = req.getParameter("gender");
+        String birthday = req.getParameter("birthday");
+        String phone = req.getParameter("phone");
+        String address = req.getParameter("address");
+        String userRole = req.getParameter("userRole");
+
+        User user = new User();
+        user.setId(Integer.parseInt(uid));
+        user.setUserName(userName);
+        user.setGender(Integer.parseInt(gender));
+        try {
+            user.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(birthday));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        user.setPhone(phone);
+        user.setAddress(address);
+        user.setUserRole(Integer.parseInt(userRole));
+        user.setModifyBy(((User)req.getSession().getAttribute(Constants.USER_SESSION)).getId());
+        user.setModifyDate(new java.sql.Date(new Date().getTime()));
+
+        UserServiceImpl userService = new UserServiceImpl();
+        if (userService.modifyUser(user)) {
+            resp.sendRedirect(req.getContextPath()+"/jsp/user.do?method=query");
+            System.out.println("修改成功");
+        }else {
+            System.out.println("修改失败");
+            try {
+                req.getRequestDispatcher("usermodify.jsp").forward(req,resp);
+            } catch (ServletException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+//    根据userCode获得用户信息
+    private void getUserById(HttpServletRequest req, HttpServletResponse resp) {
+        String uid = req.getParameter("uid");
+        UserServiceImpl userService = new UserServiceImpl();
+        User user = userService.getUserById(Integer.parseInt(uid));
+        req.setAttribute("user",user);
+        try {
+            req.getRequestDispatcher("usermodify.jsp").forward(req,resp);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ucexist(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String userCode = req.getParameter("userCode");
+        System.out.println("进入检查用户代码有没有存在" + userCode);
+        UserServiceImpl userService = new UserServiceImpl();
+        User user = userService.selectUserCodeExist(userCode);
+        HashMap<String, String> resultMap = new HashMap<>();
+        System.out.println(user == null);
+        if (user == null) {
+            resultMap.put("userCode","noexist");
+        }else {
+            resultMap.put("userCode","exist");
+        }
+        resp.setContentType("application/json");
+        PrintWriter writer = resp.getWriter();
+        writer.write(JSONArray.toJSONString(resultMap));
+        writer.flush();
+        writer.close();
+    }
+
+    //    获取角色列表
+    private void getrolelist(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("开始查询角色列表");
+        RoleServiceImpl roleService = new RoleServiceImpl();
+        List<Role> roleList = roleService.getRoleList();
+//        把roleList对象转为json格式输出
+        resp.setContentType("application/json");
+        PrintWriter writer = resp.getWriter();
+        writer.write(JSONArray.toJSONString(roleList));
+        writer.flush();
+        writer.close();
+    }
+
+    //    添加用户
+    private void addUser(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        String userCode = req.getParameter("userCode");
+        String userName = req.getParameter("userName");
+        String ruserPassword = req.getParameter("ruserPassword");
+        String gender = req.getParameter("gender");
+        String birthday = req.getParameter("birthday");
+        String phone = req.getParameter("phone");
+        String address = req.getParameter("address");
+        String userRole = req.getParameter("userRole");
+        System.out.println("用户编码:"+userCode);
+
+        User user = new User();
+        user.setUserCode(userCode);
+        System.out.println("servlet:"+user.getUserCode());
+        user.setUserName(userName);
+        user.setUserPassword(ruserPassword);
+        user.setGender(Integer.parseInt(gender));
+        user.setBirthday(new SimpleDateFormat("yyyy-MM-dd").parse(birthday));
+        user.setPhone(phone);
+        user.setAddress(address);
+        user.setUserRole(Integer.parseInt(userRole));
+        user.setModifyDate(new Date("yyyy-MM-dd hh:mm:ss"));
+        user.setModifyBy(((User)req.getSession().getAttribute(Constants.USER_SESSION)).getId());
+        System.out.println(user.getUserCode());
+
+        UserServiceImpl userService = new UserServiceImpl();
+        if (userService.addUser(user)) {
+            resp.sendRedirect(req.getContextPath()+"/jsp/user.do?method=query");
+        }else {
+            req.getRequestDispatcher("useradd.jsp").forward(req,resp);
+        }
+
+    }
+
+    //    查看用户管理
+    private void view(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String uid = req.getParameter("uid");
+        System.out.println("进入view" + uid);
+        UserServiceImpl userService = new UserServiceImpl();
+        User user = userService.getUserById(Integer.parseInt(uid));
+        req.setAttribute("user",user);
+        req.getRequestDispatcher("userview.jsp").forward(req,resp);
+    }
+
+    //查询用户管理
     private void query(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 //        获取前端参数
@@ -92,15 +270,6 @@ public class UserServlet extends HttpServlet {
         req.getRequestDispatcher("userlist.jsp").forward(req,resp);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
-
-    }
-
-    //查询用户管理
-
-
     //修改密码
     public void updatePwd(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Object attribute = req.getSession().getAttribute(Constants.USER_SESSION);
@@ -149,5 +318,11 @@ public class UserServlet extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+
     }
 }
