@@ -227,6 +227,7 @@ public class UserServlet extends HttpServlet {
         String queryUserRoleTemp = req.getParameter("queryUserRole");
         String pageIndex = req.getParameter("pageIndex");
 
+
 //        初始页数
         int queryUserRole = 0;
         int pageSize = Constants.PAGESIZE;

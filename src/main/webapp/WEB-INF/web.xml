@@ -3,7 +3,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-
+    
+<!--    供应商操作-->
+    <servlet>
+        <servlet-name>ProviderServlet</servlet-name>
+        <servlet-class>com.tuzhi.servlet.provider.ProviderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProviderServlet</servlet-name>
+        <url-pattern>/jsp/provider.do</url-pattern>
+    </servlet-mapping>
+    
+<!--    订单操作-->
+    <servlet>
+        <servlet-name>BillServlet</servlet-name>
+        <servlet-class>com.tuzhi.servlet.bill.BillServlet</servlet-class>
+    </servlet>    
+    <servlet-mapping>
+        <servlet-name>BillServlet</servlet-name>
+        <url-pattern>/jsp/bill.do</url-pattern>
+    </servlet-mapping>
+    
 <!--    用户操作-->
     <servlet>
         <servlet-name>UserServlet</servlet-name>
